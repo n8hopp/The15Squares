@@ -8,11 +8,13 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SquaresView extends SurfaceView implements View.OnTouchListener {
     private SquaresModel squaresModel;
 
     private ArrayList<Square> squareList;
+
     private static final int[][] neighborCoords = {
             { -1, 0 },
             { 1, 0 },
@@ -26,6 +28,7 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
         setWillNotDraw(false);
 
         squareList = new ArrayList<>();
+
         squaresModel = new SquaresModel();
 
         int boardLen = squaresModel.boardLen;
@@ -39,11 +42,13 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
                 } else {
                     Square square = new Square();
                     square.setCorner(x * squaresModel.length, y *squaresModel.length);
+                    square.setId(squareList.size()+1);
                     squareList.add(square);
                 }
 
             }
         }
+        Collections.shuffle(squareList);
     }
 
     @Override
@@ -103,6 +108,22 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
         squareList.set(i, squareList.get(j));
         squareList.set(j, temp);
         invalidate();
+    }
+
+    protected void checkWin()
+    {
+        int boardLen = squaresModel.boardLen;
+        for (int i = 1; i < boardLen * boardLen; i++)
+        {
+            if(i == squareList.get(i).getId())
+            {
+                // return true, celebrate, yay
+            }
+            else
+            {
+                // return false, bad, ew
+            }
+        }
     }
 
     public SquaresModel getSquaresModel()

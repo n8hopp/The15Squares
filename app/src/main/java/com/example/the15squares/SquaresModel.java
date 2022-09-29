@@ -5,4 +5,5 @@ public class SquaresModel {
     int y = 300;
     int length = 150;
     int boardLen = 4;
+    int id = 0;
 }
