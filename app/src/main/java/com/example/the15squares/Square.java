@@ -15,14 +15,14 @@ public class Square {
     {
         x = 300;
         y = 300;
-        length = 150;
+        length = 200;
         id = 0;
 
         paint = new Paint();
-        paint.setARGB(255, 255, 255,255);
+        paint.setARGB(255, 0, 0,0);
 
         stringPaint = new Paint();
-        stringPaint.setColor(Color.BLACK);
+        stringPaint.setColor(Color.WHITE);
         stringPaint.setTextAlign(Paint.Align.CENTER);
         stringPaint.setTextSize(length/2);
     }

@@ -2,10 +2,14 @@ package com.example.the15squares;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +18,8 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
     private SquaresModel squaresModel;
 
     private ArrayList<Square> squareList;
+    private RelativeLayout background;
+    private Paint backgroundPaint;
 
     private static final int[][] neighborCoords = {
             { -1, 0 },
@@ -28,9 +34,10 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
         setWillNotDraw(false);
 
         squareList = new ArrayList<>();
-
         squaresModel = new SquaresModel();
 
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.WHITE);
         int boardLen = squaresModel.boardLen;
         for(int x=0; x < boardLen; x++)
         {
@@ -48,11 +55,12 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
 
             }
         }
-        Collections.shuffle(squareList);
+        //randomizeList();
     }
 
     @Override
     public void onDraw(Canvas canvas) {
+        canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
         int boardLen = squaresModel.boardLen;
         if (squareList == null) {
             return;
@@ -92,9 +100,17 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
             if (nullX >= 0 && nullX < boardLen && nullY >= 0 && nullY < boardLen &&
                     squareList.get(XYtoIndex(nullX, nullY)) == null) {
                 swapTiles(XYtoIndex(nullX, nullY), XYtoIndex(tileX, tileY));
+                if(checkWin())
+                {
+                    backgroundPaint.setColor(Color.GREEN);
+                    background.setBackgroundColor(Color.GREEN);
+                } else
+                {
+                    backgroundPaint.setColor(Color.WHITE);
+                    background.setBackgroundColor(Color.WHITE);
+                }
                 return true;
             }
-
         }
         return false;
     }
@@ -110,20 +126,72 @@ public class SquaresView extends SurfaceView implements View.OnTouchListener {
         invalidate();
     }
 
-    protected void checkWin()
+    protected boolean checkWin()
     {
         int boardLen = squaresModel.boardLen;
-        for (int i = 1; i < boardLen * boardLen; i++)
+        boolean found = true;
+        for (int i = 0; i < (boardLen * boardLen) - 1; i++)
         {
-            if(i == squareList.get(i).getId())
+            if(squareList.get(i) != null)
             {
-                // return true, celebrate, yay
+                if(!(i+1 == squareList.get(i).getId())) {
+                    found = false;
+                }
+            } else { found = false; }
+
+        }
+
+        return found;
+    }
+
+    private boolean isRandomizationValid(ArrayList<Square> ar)
+    {
+        int boardLen = squaresModel.boardLen;
+        int alternatingSum = 0;
+        for(int i = 0; i < boardLen * boardLen; i++)
+        {
+            if(squareList.get(i) == null)
+            {
+                continue;
             }
-            else
+            for(int j = 0; j < i; j++)
             {
-                // return false, bad, ew
+                if(squareList.get(j) == null)
+                {
+                    continue;
+                }
+                if(squareList.get(j).getId() > squareList.get(i).getId())
+                {
+                    alternatingSum++;
+                }
             }
         }
+        return (alternatingSum % 2 == 0);
+    }
+
+    private void randomizeList()
+    {
+        int boardLen = squaresModel.boardLen;
+        ArrayList<Square> randomized = new ArrayList<>();
+        for(int i = 0; i < boardLen*boardLen - 1; i++)
+        {
+            randomized.add(squareList.get(i));
+        }
+        Collections.shuffle(randomized);
+        for(int i = 0; i < boardLen*boardLen - 1; i++)
+        {
+            squareList.set(i, randomized.get(i));
+        }
+        if(!isRandomizationValid(squareList))
+        {
+            randomizeList();
+        }
+
+    }
+
+    public void setBackground(RelativeLayout bg)
+    {
+        background = bg;
     }
 
     public SquaresModel getSquaresModel()
