@@ -10,6 +10,7 @@ public class Square {
     private int id;
     private Paint paint;
     private Paint stringPaint;
+    private Paint borderPaint;
 
     public Square()
     {
@@ -24,19 +25,29 @@ public class Square {
         stringPaint = new Paint();
         stringPaint.setColor(Color.WHITE);
         stringPaint.setTextAlign(Paint.Align.CENTER);
-        stringPaint.setTextSize(length/2);
+        borderPaint = new Paint();
+        borderPaint.setStrokeWidth(length/20);
+        borderPaint.setColor(Color.WHITE);
+        borderPaint.setStyle(Paint.Style.STROKE);
     }
 
     public void draw(Canvas canvas)
     {
+        stringPaint.setTextSize(length/2);
         canvas.drawRect(x, y, x+length, y+length, paint);
-        canvas.drawText(String.valueOf(id), x+length/2, y+length/2, stringPaint );
+        canvas.drawRect(x, y, x+length, y+length, borderPaint);
+        canvas.drawText(String.valueOf(id), x+length/2, y+length/2 - (stringPaint.descent() + stringPaint.ascent()) / 2, stringPaint );
     }
 
     public void setCorner(int _x, int _y)
     {
         x = _x;
         y = _y;
+    }
+
+    public void setSize(int len)
+    {
+        length = len;
     }
 
     public boolean isClicked(float clickX, float clickY, int tileX, int tileY) {
